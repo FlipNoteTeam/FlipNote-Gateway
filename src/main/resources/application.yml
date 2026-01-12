@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-public
+          uri: http://user-service:8081
+          predicates:
+            - Path=/v1/users/signup, /v1/users/login
+
+        - id: user-service-private
+          uri: http://user-service:8081
+          predicates:
+            - Path=/v1/users/**
+          filters:
+            - AuthenticationFilter
+
+jwt:
+  secret: ${JWT_SECRET:"55ca298dcfc216e215622e3f48a251abaa4e8bb973074f065ab170e311acc15811d01a2407290c3ac143648196306d4a6f666a4ed364d3df633e08eb184bb0aea0f2edde4fd2d7fa68ea95ddbc421ff532ce47bde775975911042d665bc22d88a9fa26a03bb4d25530b8cdeb1247d87c9e3efcd721e368b0566b00a43308a729"}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    flipnote.apigateway: DEBUG

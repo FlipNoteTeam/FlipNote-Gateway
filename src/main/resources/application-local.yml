@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-public
+          uri: http://localhost:8081
+          predicates:
+            - Path=/v1/users/signup, /v1/users/login
+
+        - id: user-service-private
+          uri: http://localhost:8081
+          predicates:
+            - Path=/v1/users/**
+          filters:
+            - AuthenticationFilter
