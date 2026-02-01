@@ -3,7 +3,6 @@
 .gradle
 .idea
 *.md
-src
 build/tmp
 build/classes
 build/generated
