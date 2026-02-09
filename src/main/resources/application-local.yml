@@ -33,6 +33,7 @@ spring:
                   - /v1/auth/logout
                   - /v1/auth/password
                   - /v1/auth/social-links
+                  - /v1/auth/social-links/*
                   - /v1/oauth2/authorization/*
           filters:
             - AuthenticationFilter
