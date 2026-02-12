@@ -48,6 +48,17 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: image-private
+          uri: http://image-service:8082
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /v1/images/**
+                  - "!/v1/images/upload"
+          filters:
+            - AuthenticationFilter
+
 jwt:
   secret: ${JWT_SECRET}
 
