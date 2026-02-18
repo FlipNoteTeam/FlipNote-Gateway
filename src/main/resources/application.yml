@@ -45,6 +45,7 @@ spring:
                   - /v1/auth/social-links
                   - /v1/auth/social-links/*
                   - /v1/oauth2/authorization/*
+                  - /v1/oauth2/links/*
           filters:
             - AuthenticationFilter
 
