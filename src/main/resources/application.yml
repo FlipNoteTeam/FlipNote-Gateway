@@ -55,6 +55,19 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: reaction-private
+          uri: http://reaction-service:8083
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /v1/likes/{targetType}/{targetId}
+                  - /v1/likes/{targetType}
+                  - /v1/bookmarks/{targetType}/{targetId}
+                  - /v1/bookmarks/{targetType}
+          filters:
+            - AuthenticationFilter
+
         - id: image-public
           uri: http://image-service:8082
           predicates:

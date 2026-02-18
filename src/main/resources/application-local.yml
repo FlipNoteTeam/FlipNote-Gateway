@@ -45,6 +45,19 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: reaction-private
+          uri: http://localhost:8083
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /v1/likes/{targetType}/{targetId}
+                  - /v1/likes/{targetType}
+                  - /v1/bookmarks/{targetType}/{targetId}
+                  - /v1/bookmarks/{targetType}
+          filters:
+            - AuthenticationFilter
+
 app:
   user-service:
     url: http://localhost:8081
