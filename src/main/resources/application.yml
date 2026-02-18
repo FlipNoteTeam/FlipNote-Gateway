@@ -55,6 +55,19 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: user-swagger
+          uri: http://user-service:8081
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /users/swagger-ui.html
+                  - /users/swagger-ui/**
+                  - /users/v3/api-docs
+                  - /users/v3/api-docs/**
+          filters:
+            - RewritePath=/users/(?<remaining>.*), /${remaining}
+
         - id: reaction-private
           uri: http://reaction-service:8083
           predicates:
