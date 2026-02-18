@@ -65,8 +65,6 @@ spring:
                   - /users/swagger-ui/**
                   - /users/v3/api-docs
                   - /users/v3/api-docs/**
-          filters:
-            - RewritePath=/users/(?<remaining>.*), /${remaining}
 
         - id: reaction-private
           uri: http://reaction-service:8083
