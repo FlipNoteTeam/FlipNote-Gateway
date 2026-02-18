@@ -1,12 +1,10 @@
 package flipnote.apigateway.filter;
 
-import flipnote.apigateway.util.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
+import flipnote.apigateway.client.TokenValidationClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -16,47 +14,45 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
-    private final JwtUtil jwtUtil;
+    private final TokenValidationClient tokenValidationClient;
 
-    public AuthenticationFilter(JwtUtil jwtUtil) {
+    public AuthenticationFilter(TokenValidationClient tokenValidationClient) {
         super(Config.class);
-        this.jwtUtil = jwtUtil;
+        this.tokenValidationClient = tokenValidationClient;
     }
+
+    private static final String ACCESS_TOKEN_COOKIE = "accessToken";
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
-            String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+            HttpCookie cookie = exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE);
 
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                log.warn("Missing or invalid Authorization header");
+            if (cookie == null) {
+                log.warn("Missing access token cookie");
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
 
-            String token = authHeader.substring(7);
+            String token = cookie.getValue();
 
-            try {
-                Claims claims = jwtUtil.parseToken(token);
+            return tokenValidationClient.validateToken(token)
+                    .flatMap(response -> {
+                        log.debug("Authenticated user: id={}, email={}, role={}",
+                                response.userId(), response.email(), response.role());
 
-                Long userId = jwtUtil.getUserId(claims);
-                String email = jwtUtil.getEmail(claims);
-                String role = jwtUtil.getRole(claims);
+                        ServerWebExchange modifiedExchange = exchange.mutate()
+                                .request(r -> r
+                                        .header("X-User-Id", String.valueOf(response.userId()))
+                                        .header("X-User-Email", response.email())
+                                        .header("X-User-Role", response.role()))
+                                .build();
 
-                log.debug("Authenticated user: id={}, email={}, role={}", userId, email, role);
-
-                ServerWebExchange modifiedExchange = exchange.mutate()
-                        .request(r -> r
-                                .header("X-User-Id", String.valueOf(userId))
-                                .header("X-User-Email", email)
-                                .header("X-User-Role", role))
-                        .build();
-
-                return chain.filter(modifiedExchange);
-
-            } catch (JwtException e) {
-                log.error("JWT validation failed: {}", e.getMessage());
-                return onError(exchange, HttpStatus.UNAUTHORIZED);
-            }
+                        return chain.filter(modifiedExchange);
+                    })
+                    .onErrorResume(e -> {
+                        log.error("Token validation failed: {}", e.getMessage());
+                        return onError(exchange, HttpStatus.UNAUTHORIZED);
+                    });
         };
     }
 
