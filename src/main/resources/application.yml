@@ -15,7 +15,12 @@ spring:
         - id: user-private
           uri: http://user-service:8081
           predicates:
-            - Path=/v1/users/**
+            - name: Path
+              args:
+                patterns:
+                  - /v1/users/me
+                  - /v1/users/{userId}
+                  - /v1/users
           filters:
             - AuthenticationFilter
 
@@ -28,7 +33,6 @@ spring:
                   - /v1/auth/login
                   - /v1/auth/register
                   - /v1/auth/token/refresh
-                  - /v1/auth/token/validate
                   - /v1/auth/email-verification/request
                   - /v1/auth/email-verification
                   - /v1/auth/password-reset/request
