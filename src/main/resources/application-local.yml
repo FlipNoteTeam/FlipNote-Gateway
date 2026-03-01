@@ -69,6 +69,29 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: image-public
+          uri: http://image-service:8082
+          predicates:
+            - Path=/v1/images/upload
+
+        - id: image-private
+          uri: http://image-service:8082
+          predicates:
+            - Path=/v1/images/**
+          filters:
+            - AuthenticationFilter
+
+        - id: group
+          uri: http://group-service:8084
+          predicates:
+            - name: Path
+            - args:
+                patterns:
+                  - /v1/groups/**
+                  - /v1/joins/**
+          filters:
+            - AuthenticationFilter
+
 app:
   user-service:
     url: http://localhost:8081
