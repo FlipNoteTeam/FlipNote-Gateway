@@ -92,6 +92,21 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: group-swagger
+          uri: http://localhost:8084
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /groups/swagger-ui.html
+                  - /groups/swagger-ui/**
+                  - /groups/v3/api-docs
+                  - /groups/v3/api-docs/**
+
 app:
   user-service:
     url: http://localhost:8081
+  image-service:
+    url: http://localhost:8082
+  group-service:
+    url: http://localhost:8084
