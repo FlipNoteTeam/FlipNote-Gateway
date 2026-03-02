@@ -91,9 +91,24 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: group
+          uri: http://group-service:8084
+          predicates:
+            - name: Path
+            - args:
+                patterns:
+                  - /v1/groups/**
+                  - /v1/joins/**
+          filters:
+            - AuthenticationFilter
+
 app:
   user-service:
     url: http://user-service:8081
+  image-service:
+    url: http://image-service:8082
+  group-service:
+    url: http://group-service:8084
 
 management:
   endpoints:
