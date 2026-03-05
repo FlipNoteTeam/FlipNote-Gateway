@@ -95,7 +95,7 @@ spring:
           uri: http://group-service:8084
           predicates:
             - name: Path
-            - args:
+              args:
                 patterns:
                   - /v1/groups/**
                   - /v1/joins/**
