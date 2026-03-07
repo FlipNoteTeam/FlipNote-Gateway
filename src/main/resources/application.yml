@@ -102,6 +102,22 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: group-swagger
+          uri: http://group-service:8084
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /users/swagger-ui.html
+                  - /users/swagger-ui/**
+                  - /users/v3/api-docs
+                  - /users/v3/api-docs/**
+
+        - id: group-health
+          uri: http://group-service:8084
+          predicates:
+            - Path=/groups/actuator/health
+
 app:
   user-service:
     url: http://user-service:8081
