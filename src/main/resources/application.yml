@@ -7,10 +7,10 @@ spring:
 
   cloud:
     gateway:
-      default-filters:
-        - RemoveRequestHeader=X-User-Id
-        - RemoveRequestHeader=X-User-Email
-        - RemoveRequestHeader=X-User-Role
+#      default-filters:
+#        - RemoveRequestHeader=X-User-Id
+#        - RemoveRequestHeader=X-User-Email
+#        - RemoveRequestHeader=X-User-Role
       routes:
         - id: user-private
           uri: http://user-service:8081
