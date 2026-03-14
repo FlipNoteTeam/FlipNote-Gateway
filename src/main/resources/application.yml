@@ -38,6 +38,7 @@ spring:
                   - /v1/auth/password-reset/request
                   - /v1/auth/password-reset
                   - /oauth2/callback/*
+                  - /oauth2/authorization/*
 
         - id: auth-private
           uri: http://user-service:8081
@@ -49,7 +50,6 @@ spring:
                   - /v1/auth/password
                   - /v1/auth/social-links
                   - /v1/auth/social-links/*
-                  - /oauth2/authorization/*
                   - /v1/oauth2/links/*
 
           filters:
@@ -99,6 +99,7 @@ spring:
                 patterns:
                   - /v1/groups/**
                   - /v1/joins/**
+                  - /v1/group-invitations
           filters:
             - AuthenticationFilter
 
