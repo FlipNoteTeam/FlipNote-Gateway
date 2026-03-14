@@ -37,7 +37,7 @@ spring:
                   - /v1/auth/email-verification
                   - /v1/auth/password-reset/request
                   - /v1/auth/password-reset
-                  - /v1/oauth2/callback/*
+                  - /oauth2/callback/*
 
         - id: auth-private
           uri: http://user-service:8081
