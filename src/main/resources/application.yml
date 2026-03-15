@@ -7,10 +7,10 @@ spring:
 
   cloud:
     gateway:
-#      default-filters:
-#        - RemoveRequestHeader=X-User-Id
-#        - RemoveRequestHeader=X-User-Email
-#        - RemoveRequestHeader=X-User-Role
+      default-filters:
+        - RemoveRequestHeader=X-User-Id
+        - RemoveRequestHeader=X-User-Email
+        - RemoveRequestHeader=X-User-Role
       routes:
         - id: user-private
           uri: http://user-service:8081
@@ -37,8 +37,7 @@ spring:
                   - /v1/auth/email-verification
                   - /v1/auth/password-reset/request
                   - /v1/auth/password-reset
-                  - /oauth2/callback/*
-                  - /oauth2/authorization/*
+                  - /v1/oauth2/callback/*
 
         - id: auth-private
           uri: http://user-service:8081
@@ -50,6 +49,7 @@ spring:
                   - /v1/auth/password
                   - /v1/auth/social-links
                   - /v1/auth/social-links/*
+                  - /v1/oauth2/authorization/*
                   - /v1/oauth2/links/*
 
           filters:
@@ -99,25 +99,49 @@ spring:
                 patterns:
                   - /v1/groups/**
                   - /v1/joins/**
-                  - /v1/group-invitations
           filters:
             - AuthenticationFilter
 
-        - id: group-swagger
-          uri: http://group-service:8084
+        - id: cardset-swagger
+          uri: http://cardset-service:8085
           predicates:
             - name: Path
               args:
                 patterns:
-                  - /groups/swagger-ui.html
-                  - /groups/swagger-ui/**
-                  - /groups/v3/api-docs
-                  - /groups/v3/api-docs/**
+                  - /cardsets/swagger-ui.html
+                  - /cardsets/swagger-ui/**
+                  - /cardsets/v3/api-docs
+                  - /cardsets/v3/api-docs/**
 
         - id: group-health
           uri: http://group-service:8084
           predicates:
             - Path=/groups/actuator/health
+
+        - id: cardset-private
+          uri: http://cardset-service:8085
+          predicates:
+            - name: Path
+              args:
+                patterns:
+                  - /v1/cardsets
+                  - /v1/cardsets/**
+                  - /v1/cards
+                  - /v1/cards/**
+          filters:
+            - AuthenticationFilter
+
+        - id: cardset-websocket
+          uri: ws://cardset-service:8085
+          predicates:
+            - Path=/cardsets/**
+          filters:
+            - AuthenticationFilter
+
+        - id: cardset-swagger
+          uri: http://cardset-service:8085
+          predicates:
+            - Path=/api-docs/**
 
 app:
   user-service:
@@ -126,21 +150,13 @@ app:
     url: http://image-service:8082
   group-service:
     url: http://group-service:8084
-
+  cardset-service:
+    url: http://cardset-service:8085
 management:
   endpoints:
     web:
       exposure:
         include: health
-  endpoint:
-    health:
-      probes:
-        enabled: true
-  health:
-    livenessState:
-      enabled: true
-    readinessState:
-      enabled: true
 
 logging:
   level:
