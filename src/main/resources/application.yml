@@ -37,7 +37,8 @@ spring:
                   - /v1/auth/email-verification
                   - /v1/auth/password-reset/request
                   - /v1/auth/password-reset
-                  - /v1/oauth2/callback/*
+                  - /oauth2/callback/*
+                  - /oauth2/authorization/*
 
         - id: auth-private
           uri: http://user-service:8081
@@ -49,7 +50,6 @@ spring:
                   - /v1/auth/password
                   - /v1/auth/social-links
                   - /v1/auth/social-links/*
-                  - /v1/oauth2/authorization/*
                   - /v1/oauth2/links/*
 
           filters:
@@ -102,16 +102,16 @@ spring:
           filters:
             - AuthenticationFilter
 
-        - id: cardset-swagger
-          uri: http://cardset-service:8085
+        - id: group-swagger
+          uri: http://group-service:8084
           predicates:
             - name: Path
               args:
                 patterns:
-                  - /cardsets/swagger-ui.html
-                  - /cardsets/swagger-ui/**
-                  - /cardsets/v3/api-docs
-                  - /cardsets/v3/api-docs/**
+                  - /groups/swagger-ui.html
+                  - /groups/swagger-ui/**
+                  - /groups/v3/api-docs
+                  - /groups/v3/api-docs/**
 
         - id: group-health
           uri: http://group-service:8084
@@ -141,7 +141,13 @@ spring:
         - id: cardset-swagger
           uri: http://cardset-service:8085
           predicates:
-            - Path=/api-docs/**
+            - name: Path
+              args:
+                patterns:
+                  - /cardsets/swagger-ui.html
+                  - /cardsets/swagger-ui/**
+                  - /cardsets/v3/api-docs
+                  - /cardsets/v3/api-docs/**
 
 app:
   user-service:
@@ -152,11 +158,21 @@ app:
     url: http://group-service:8084
   cardset-service:
     url: http://cardset-service:8085
+
 management:
   endpoints:
     web:
       exposure:
         include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
 
 logging:
   level:
